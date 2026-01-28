@@ -1,0 +1,222 @@
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
+import { Mail, Linkedin } from "lucide-react";
+
+// Import team photos
+import abdelbariPhoto from "@/assets/team/abdelbari-nasri.jpg";
+import helaPhoto from "@/assets/team/hela-taghouti.jpg";
+import ameliePhoto from "@/assets/team/amelie-bolduc.jpg";
+
+interface TeamMember {
+  name: string;
+  role: string;
+  email: string;
+  photo: string | null;
+  isLeader?: boolean;
+}
+
+const teamMembers: TeamMember[] = [
+  {
+    name: "Abdelbari Nasri",
+    role: "Conseiller Senior",
+    email: "abdelbari.nasri@agc.ia.ca",
+    photo: abdelbariPhoto,
+    isLeader: true,
+  },
+  {
+    name: "Hela Taghouti",
+    role: "Conseillère Senior",
+    email: "hela.taghouti@agc.ia.ca",
+    photo: helaPhoto,
+    isLeader: true,
+  },
+  {
+    name: "Amélie Bolduc",
+    role: "Conseillère Senior",
+    email: "amelie.bolduc@agc.ia.ca",
+    photo: ameliePhoto,
+    isLeader: true,
+  },
+  {
+    name: "Sofiane Lemanaa",
+    role: "Conseiller Financier",
+    email: "sofiane.lemanaa@agc.ia.ca",
+    photo: null,
+  },
+  {
+    name: "Maryam Benlimam",
+    role: "Conseillère Financière",
+    email: "maryam.benlimam@agc.ia.ca",
+    photo: null,
+  },
+  {
+    name: "Dalel Djeffel",
+    role: "Conseillère Financière",
+    email: "dalel.djeffel@agc.ia.ca",
+    photo: null,
+  },
+  {
+    name: "Jonathan Lemay",
+    role: "Conseiller Financier",
+    email: "jonathan.lemay@agc.ia.ca",
+    photo: null,
+  },
+  {
+    name: "Valérie Boisvert",
+    role: "Conseillère Financière",
+    email: "valerie.boisvert@agc.ia.ca",
+    photo: null,
+  },
+  {
+    name: "Mamadou Seck",
+    role: "Conseiller Financier",
+    email: "mamadou.seck@agc.ia.ca",
+    photo: null,
+  },
+  {
+    name: "Thouraya Saghrouni",
+    role: "Conseillère Financière",
+    email: "thouraya.saghouni@agc.ia.ca",
+    photo: null,
+  },
+];
+
+const TeamCard = ({ member, index }: { member: TeamMember; index: number }) => {
+  const initials = member.name
+    .split(" ")
+    .map((n) => n[0])
+    .join("");
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+      className={`group relative ${member.isLeader ? "md:col-span-1" : ""}`}
+    >
+      <div className="glass-card rounded-lg overflow-hidden border border-border hover:border-gold/30 transition-all duration-500 hover:shadow-glow">
+        {/* Photo Container */}
+        <div className="relative aspect-[3/4] overflow-hidden bg-navy-800">
+          {member.photo ? (
+            <img
+              src={member.photo}
+              alt={member.name}
+              className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-navy-700 to-navy-800">
+              <span className="text-5xl font-serif text-gold/30">{initials}</span>
+            </div>
+          )}
+          
+          {/* Overlay gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-navy-900 via-transparent to-transparent opacity-80" />
+          
+          {/* Social Links */}
+          <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+            <div>
+              <h3 className="font-serif text-lg text-foreground mb-1">{member.name}</h3>
+              <p className="text-gold text-sm tracking-wide">{member.role}</p>
+            </div>
+            <div className="flex gap-2">
+              <a
+                href={`mailto:${member.email}`}
+                className="w-10 h-10 rounded-full bg-background/20 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-gold hover:text-navy-900 transition-all duration-300"
+                aria-label={`Email ${member.name}`}
+              >
+                <Mail className="w-4 h-4" />
+              </a>
+              <a
+                href="#"
+                className="w-10 h-10 rounded-full bg-background/20 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-gold hover:text-navy-900 transition-all duration-300"
+                aria-label={`LinkedIn ${member.name}`}
+              >
+                <Linkedin className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+export const Team = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  const leaders = teamMembers.filter((m) => m.isLeader);
+  const advisors = teamMembers.filter((m) => !m.isLeader);
+
+  return (
+    <section id="team" className="py-24 lg:py-32 bg-navy-800 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
+      
+      <div className="container mx-auto px-6 lg:px-12">
+        {/* Section Header */}
+        <motion.div
+          ref={ref}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+          className="text-center max-w-3xl mx-auto mb-16 lg:mb-20"
+        >
+          <span className="text-gold text-sm tracking-[0.3em] uppercase mb-4 block">
+            Notre Équipe
+          </span>
+          <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground mb-6">
+            Les <span className="text-gradient">Simplificateurs</span> à Votre Service
+          </h2>
+          <p className="text-muted-foreground text-lg leading-relaxed">
+            Une équipe de professionnels passionnés, dédiés à simplifier votre vie financière 
+            et à vous accompagner vers l'atteinte de vos objectifs.
+          </p>
+        </motion.div>
+
+        {/* Leaders Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-12">
+          {leaders.map((member, index) => (
+            <TeamCard key={member.email} member={member} index={index} />
+          ))}
+        </div>
+
+        {/* Divider */}
+        <div className="divider-gold my-12" />
+
+        {/* Advisors Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6">
+          {advisors.map((member, index) => (
+            <motion.div
+              key={member.email}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.05 }}
+              className="group"
+            >
+              <div className="glass-card rounded-lg p-4 text-center border border-border hover:border-gold/30 transition-all duration-300">
+                {/* Avatar */}
+                <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-navy-600 to-navy-700 flex items-center justify-center">
+                  <span className="text-lg font-serif text-gold/50">
+                    {member.name.split(" ").map((n) => n[0]).join("")}
+                  </span>
+                </div>
+                <h4 className="font-serif text-sm text-foreground mb-1 truncate">{member.name}</h4>
+                <p className="text-gold/70 text-xs">{member.role}</p>
+                <a
+                  href={`mailto:${member.email}`}
+                  className="mt-3 inline-flex items-center justify-center w-8 h-8 rounded-full bg-gold/10 text-gold hover:bg-gold hover:text-navy-900 transition-all duration-300"
+                  aria-label={`Email ${member.name}`}
+                >
+                  <Mail className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
