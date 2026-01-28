@@ -1,142 +1,138 @@
 import { motion } from "framer-motion";
-import { ChevronDown, Shield, TrendingUp, Users } from "lucide-react";
+import { ArrowRight, Shield, TrendingUp, Users } from "lucide-react";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut" as const,
+    },
+  },
+};
 
 export const Hero = () => {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero"
+      className="relative min-h-screen flex items-center justify-center bg-background overflow-hidden"
     >
-      {/* Animated Background Elements */}
+      {/* Subtle Background Pattern */}
       <div className="absolute inset-0 overflow-hidden">
-        {/* Subtle grid pattern */}
-        <div 
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(hsl(var(--gold) / 0.3) 1px, transparent 1px),
-                              linear-gradient(90deg, hsl(var(--gold) / 0.3) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px',
-          }}
-        />
-        
-        {/* Floating orbs */}
-        <motion.div
-          animate={{ 
-            y: [0, -30, 0],
-            opacity: [0.1, 0.2, 0.1]
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full bg-gold/10 blur-3xl"
-        />
-        <motion.div
-          animate={{ 
-            y: [0, 20, 0],
-            opacity: [0.05, 0.15, 0.05]
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-primary/20 blur-3xl"
-        />
+        {/* Gradient orbs */}
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gold-200/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-navy-100/50 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3" />
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-6 lg:px-12 pt-24">
-        <div className="max-w-5xl mx-auto text-center">
+      <div className="relative z-10 section-container pt-32 pb-20 lg:pt-40 lg:pb-32">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="max-w-4xl mx-auto text-center"
+        >
           {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-gold/30 bg-gold/5 mb-8"
-          >
-            <Shield className="w-4 h-4 text-gold" />
-            <span className="text-gold text-sm tracking-wider uppercase">
-              Excellence Financière au Canada
+          <motion.div variants={itemVariants} className="mb-8">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary text-muted-foreground text-sm font-medium">
+              <Shield className="w-4 h-4 text-gold-500" />
+              <span>Conseillers financiers certifiés au Canada</span>
             </span>
           </motion.div>
 
           {/* Main Title */}
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight mb-6"
-          >
-            <span className="text-foreground">Votre Avenir Financier,</span>
-            <br />
-            <span className="text-gradient">Simplifié avec Excellence</span>
+          <motion.h1 variants={itemVariants} className="mb-6">
+            <span className="block text-foreground">Votre avenir financier,</span>
+            <span className="block text-foreground">
+              simplifié avec{" "}
+              <span className="text-gradient-gold">excellence</span>
+            </span>
           </motion.h1>
 
           {/* Subtitle */}
           <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed"
+            variants={itemVariants}
+            className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
           >
-            Une équipe de conseillers financiers dévoués à transformer la complexité 
-            de vos finances en une stratégie claire, personnalisée et performante.
+            Une équipe de conseillers dévoués à transformer la complexité de vos finances 
+            en une stratégie claire, personnalisée et performante.
           </motion.p>
 
           {/* CTA Buttons */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20"
+            variants={itemVariants}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
           >
             <a
               href="#contact"
-              className="btn-luxury text-base tracking-widest uppercase rounded-sm w-full sm:w-auto"
+              className="btn-primary px-8 py-4 text-base gap-2 w-full sm:w-auto"
             >
-              Planifier une Consultation
+              <span>Consultation gratuite</span>
+              <ArrowRight className="w-4 h-4" />
             </a>
             <a
               href="#services"
-              className="btn-outline-luxury text-base tracking-widest uppercase rounded-sm w-full sm:w-auto"
+              className="btn-secondary px-8 py-4 text-base w-full sm:w-auto"
             >
-              Découvrir nos Services
+              Découvrir nos services
             </a>
           </motion.div>
 
           {/* Stats */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl mx-auto"
+            variants={itemVariants}
+            className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 max-w-2xl mx-auto"
           >
             {[
-              { icon: Users, value: "500+", label: "Clients Accompagnés" },
-              { icon: TrendingUp, value: "15+", label: "Années d'Expertise" },
+              { icon: Users, value: "500+", label: "Clients accompagnés" },
+              { icon: TrendingUp, value: "15+", label: "Années d'expertise" },
               { icon: Shield, value: "100%", label: "Confidentialité" },
             ].map((stat, index) => (
               <div
                 key={index}
-                className="glass-card rounded-lg p-6 text-center group hover:border-gold/30 transition-all duration-300"
+                className="flex flex-col items-center p-6 rounded-2xl bg-secondary/50 hover:bg-secondary transition-colors duration-300"
               >
-                <stat.icon className="w-6 h-6 text-gold mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                <div className="text-3xl font-serif text-foreground mb-1">{stat.value}</div>
-                <div className="text-sm text-muted-foreground tracking-wide">{stat.label}</div>
+                <stat.icon className="w-6 h-6 text-gold-500 mb-3" />
+                <span className="text-3xl font-semibold text-foreground mb-1">{stat.value}</span>
+                <span className="text-sm text-muted-foreground">{stat.label}</span>
               </div>
             ))}
           </motion.div>
-        </div>
+        </motion.div>
 
         {/* Scroll Indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden lg:block"
         >
           <motion.a
             href="#services"
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="flex flex-col items-center text-muted-foreground hover:text-gold transition-colors"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="flex flex-col items-center text-muted-foreground hover:text-foreground transition-colors"
           >
             <span className="text-xs tracking-widest uppercase mb-2">Découvrir</span>
-            <ChevronDown className="w-5 h-5" />
+            <div className="w-6 h-10 rounded-full border-2 border-current flex items-start justify-center p-1.5">
+              <motion.div
+                animate={{ y: [0, 12, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                className="w-1.5 h-1.5 rounded-full bg-current"
+              />
+            </div>
           </motion.a>
         </motion.div>
       </div>

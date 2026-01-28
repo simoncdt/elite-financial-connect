@@ -1,44 +1,67 @@
-import { motion } from "framer-motion";
-import { MapPin, Phone, Mail, Linkedin, Facebook, Instagram } from "lucide-react";
+import { Linkedin, Facebook, Instagram, ArrowUpRight } from "lucide-react";
+
+const footerLinks = {
+  navigation: [
+    { name: "Accueil", href: "#" },
+    { name: "Services", href: "#services" },
+    { name: "Équipe", href: "#team" },
+    { name: "À Propos", href: "#about" },
+    { name: "Contact", href: "#contact" },
+  ],
+  services: [
+    { name: "Assurance Vie", href: "#services" },
+    { name: "Épargne & Placements", href: "#services" },
+    { name: "Planification Retraite", href: "#services" },
+    { name: "Assurance Hypothécaire", href: "#services" },
+    { name: "REEE & Éducation", href: "#services" },
+  ],
+  legal: [
+    { name: "Politique de confidentialité", href: "#" },
+    { name: "Conditions d'utilisation", href: "#" },
+    { name: "Loi 25", href: "#" },
+  ],
+};
+
+const socialLinks = [
+  { icon: Linkedin, href: "#", label: "LinkedIn" },
+  { icon: Facebook, href: "#", label: "Facebook" },
+  { icon: Instagram, href: "#", label: "Instagram" },
+];
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-navy-800 border-t border-border">
+    <footer className="bg-gray-50 border-t border-border">
       {/* Main Footer */}
-      <div className="container mx-auto px-6 lg:px-12 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div className="section-container py-16 lg:py-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand Column */}
-          <div className="lg:col-span-1">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-full bg-gradient-gold flex items-center justify-center">
-                <span className="text-navy-900 font-serif font-bold text-lg">SF</span>
+          <div className="col-span-2 lg:col-span-2">
+            <div className="flex items-center gap-2.5 mb-6">
+              <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
+                <span className="text-primary-foreground font-semibold text-sm">SF</span>
               </div>
               <div>
-                <span className="text-foreground font-serif text-lg tracking-wide block">
+                <span className="text-foreground font-medium text-sm tracking-tight block">
                   Les Simplificateurs
                 </span>
-                <span className="text-gold text-xs tracking-[0.3em] uppercase">
+                <span className="text-muted-foreground text-xs">
                   Financiers
                 </span>
               </div>
             </div>
-            <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+            <p className="text-muted-foreground text-sm leading-relaxed mb-6 max-w-xs">
               Votre partenaire de confiance pour une gestion financière simplifiée et performante au Canada.
             </p>
             {/* Social Links */}
-            <div className="flex gap-3">
-              {[
-                { icon: Linkedin, href: "#", label: "LinkedIn" },
-                { icon: Facebook, href: "#", label: "Facebook" },
-                { icon: Instagram, href: "#", label: "Instagram" },
-              ].map((social) => (
+            <div className="flex gap-2">
+              {socialLinks.map((social) => (
                 <a
                   key={social.label}
                   href={social.href}
                   aria-label={social.label}
-                  className="w-10 h-10 rounded-full bg-navy-700 flex items-center justify-center text-muted-foreground hover:bg-gold hover:text-navy-900 transition-all duration-300"
+                  className="w-10 h-10 rounded-xl bg-background border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-gold-300 transition-all"
                 >
                   <social.icon className="w-4 h-4" />
                 </a>
@@ -46,20 +69,15 @@ export const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Navigation */}
           <div>
-            <h4 className="font-serif text-foreground mb-6">Navigation</h4>
+            <h4 className="font-medium text-foreground mb-4 text-sm">Navigation</h4>
             <ul className="space-y-3">
-              {[
-                { name: "Accueil", href: "#hero" },
-                { name: "Nos Services", href: "#services" },
-                { name: "Notre Équipe", href: "#team" },
-                { name: "Contact", href: "#contact" },
-              ].map((link) => (
+              {footerLinks.navigation.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
-                    className="text-muted-foreground hover:text-gold text-sm transition-colors link-underline"
+                    className="text-muted-foreground hover:text-foreground text-sm transition-colors"
                   >
                     {link.name}
                   </a>
@@ -70,86 +88,55 @@ export const Footer = () => {
 
           {/* Services */}
           <div>
-            <h4 className="font-serif text-foreground mb-6">Services</h4>
+            <h4 className="font-medium text-foreground mb-4 text-sm">Services</h4>
             <ul className="space-y-3">
-              {[
-                "Assurance Vie",
-                "Épargne & Placements",
-                "Planification Retraite",
-                "Assurance Hypothécaire",
-                "REEE & Éducation",
-              ].map((service) => (
-                <li key={service}>
+              {footerLinks.services.map((link) => (
+                <li key={link.name}>
                   <a
-                    href="#services"
-                    className="text-muted-foreground hover:text-gold text-sm transition-colors link-underline"
+                    href={link.href}
+                    className="text-muted-foreground hover:text-foreground text-sm transition-colors"
                   >
-                    {service}
+                    {link.name}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Contact Info */}
-          <div>
-            <h4 className="font-serif text-foreground mb-6">Contact</h4>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" />
-                <span className="text-muted-foreground text-sm">
-                  Montréal, Québec<br />Canada
-                </span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-gold flex-shrink-0" />
-                <a
-                  href="tel:+15145551234"
-                  className="text-muted-foreground hover:text-gold text-sm transition-colors"
-                >
-                  (514) 555-1234
-                </a>
-              </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-gold flex-shrink-0" />
-                <a
-                  href="mailto:info@simplificateursfinanciers.ca"
-                  className="text-muted-foreground hover:text-gold text-sm transition-colors"
-                >
-                  info@simplificateursfinanciers.ca
-                </a>
-              </li>
-            </ul>
+          {/* CTA */}
+          <div className="col-span-2 md:col-span-1">
+            <h4 className="font-medium text-foreground mb-4 text-sm">Prêt à commencer?</h4>
+            <p className="text-muted-foreground text-sm mb-4">
+              Consultation gratuite et sans engagement.
+            </p>
+            <a
+              href="#contact"
+              className="inline-flex items-center gap-2 text-sm font-medium text-gold-600 hover:text-gold-500 transition-colors group"
+            >
+              Prendre rendez-vous
+              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </a>
           </div>
         </div>
       </div>
 
       {/* Bottom Bar */}
       <div className="border-t border-border">
-        <div className="container mx-auto px-6 lg:px-12 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="section-container py-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-muted-foreground text-xs">
               © {currentYear} Les Simplificateurs Financiers. Tous droits réservés.
             </p>
-            <div className="flex gap-6">
-              <a
-                href="#"
-                className="text-muted-foreground hover:text-gold text-xs transition-colors"
-              >
-                Politique de confidentialité
-              </a>
-              <a
-                href="#"
-                className="text-muted-foreground hover:text-gold text-xs transition-colors"
-              >
-                Conditions d'utilisation
-              </a>
-              <a
-                href="#"
-                className="text-muted-foreground hover:text-gold text-xs transition-colors"
-              >
-                Loi 25
-              </a>
+            <div className="flex flex-wrap justify-center gap-6">
+              {footerLinks.legal.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="text-muted-foreground hover:text-foreground text-xs transition-colors"
+                >
+                  {link.name}
+                </a>
+              ))}
             </div>
           </div>
         </div>
