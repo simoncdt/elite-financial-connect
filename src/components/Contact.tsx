@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
-import { Send, CheckCircle, User, Calendar, ArrowRight } from "lucide-react";
+import { Send, CheckCircle, ArrowRight, Phone, Mail, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -63,7 +63,6 @@ export const Contact = () => {
       description: "Un conseiller vous contactera dans les plus brefs délais.",
     });
 
-    // Reset form after 3 seconds
     setTimeout(() => {
       setIsSubmitted(false);
       setFormData({
@@ -79,120 +78,111 @@ export const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-24 lg:py-32 bg-background relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
-      
-      {/* Floating orb */}
-      <motion.div
-        animate={{ 
-          y: [0, -20, 0],
-          opacity: [0.05, 0.1, 0.05]
-        }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-1/4 right-0 w-[600px] h-[600px] rounded-full bg-gold/5 blur-3xl -translate-x-1/2"
-      />
-
-      <div className="container mx-auto px-6 lg:px-12 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
-          {/* Left Column - Info */}
+    <section id="contact" className="py-20 lg:py-32 bg-background relative">
+      <div className="section-container">
+        <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
+          {/* Left Column - Info (2 cols) */}
           <motion.div
             ref={ref}
-            initial={{ opacity: 0, x: -40 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-2"
           >
-            <span className="text-gold text-sm tracking-[0.3em] uppercase mb-4 block">
+            <span className="inline-block text-gold-500 text-sm font-medium tracking-wider uppercase mb-4">
               Contact
             </span>
-            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground mb-6">
-              Prenez <span className="text-gradient">Rendez-vous</span>
+            <h2 className="text-foreground mb-6">
+              Prenons <span className="text-gradient-gold">rendez-vous</span>
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-10">
               Faites le premier pas vers une gestion financière simplifiée. 
-              Nos conseillers sont à votre écoute pour répondre à toutes vos questions.
+              Notre équipe est à votre écoute.
             </p>
 
-            {/* Benefits */}
+            {/* Contact Info */}
             <div className="space-y-6">
-              {[
-                {
-                  icon: User,
-                  title: "Consultation Personnalisée",
-                  description: "Une analyse approfondie de votre situation unique",
-                },
-                {
-                  icon: Calendar,
-                  title: "Flexibilité Totale",
-                  description: "Rencontres en personne, par téléphone ou vidéoconférence",
-                },
-                {
-                  icon: CheckCircle,
-                  title: "Sans Engagement",
-                  description: "Première consultation gratuite et sans obligation",
-                },
-              ].map((benefit, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-                  className="flex gap-4"
-                >
-                  <div className="w-12 h-12 rounded-lg bg-gold/10 flex items-center justify-center flex-shrink-0">
-                    <benefit.icon className="w-5 h-5 text-gold" />
-                  </div>
-                  <div>
-                    <h4 className="font-serif text-foreground mb-1">{benefit.title}</h4>
-                    <p className="text-muted-foreground text-sm">{benefit.description}</p>
-                  </div>
-                </motion.div>
-              ))}
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-gold-100 flex items-center justify-center flex-shrink-0">
+                  <Phone className="w-5 h-5 text-gold-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground mb-1">Téléphone</p>
+                  <a href="tel:+15145551234" className="text-muted-foreground hover:text-gold-500 transition-colors">
+                    (514) 555-1234
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-gold-100 flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-5 h-5 text-gold-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground mb-1">Courriel</p>
+                  <a href="mailto:info@simplificateursfinanciers.ca" className="text-muted-foreground hover:text-gold-500 transition-colors">
+                    info@simplificateursfinanciers.ca
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-gold-100 flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-5 h-5 text-gold-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground mb-1">Adresse</p>
+                  <p className="text-muted-foreground">
+                    Montréal, Québec<br />Canada
+                  </p>
+                </div>
+              </div>
             </div>
           </motion.div>
 
-          {/* Right Column - Form */}
+          {/* Right Column - Form (3 cols) */}
           <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="lg:col-span-3"
           >
-            <div className="glass-card rounded-xl p-8 lg:p-10 border border-border">
+            <div className="p-6 sm:p-8 lg:p-10 bg-gray-50 rounded-3xl">
               {isSubmitted ? (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="text-center py-12"
+                  className="text-center py-16"
                 >
-                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gold/20 flex items-center justify-center">
-                    <CheckCircle className="w-10 h-10 text-gold" />
+                  <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gold-100 flex items-center justify-center">
+                    <CheckCircle className="w-8 h-8 text-gold-600" />
                   </div>
-                  <h3 className="font-serif text-2xl text-foreground mb-3">Merci!</h3>
+                  <h3 className="text-2xl font-semibold text-foreground mb-3">Merci!</h3>
                   <p className="text-muted-foreground">
-                    Votre demande a été envoyée avec succès. Un conseiller vous contactera sous peu.
+                    Votre demande a été envoyée. Un conseiller vous contactera sous peu.
                   </p>
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-5">
                   {/* Name Row */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm text-muted-foreground mb-2">Prénom *</label>
+                      <label className="block text-sm font-medium text-foreground mb-2">Prénom *</label>
                       <Input
                         required
                         value={formData.firstName}
                         onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                        className="bg-navy-800 border-border focus:border-gold text-foreground"
+                        className="bg-background border-border focus:border-gold-400 focus:ring-gold-400 h-12 rounded-xl"
                         placeholder="Jean"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-muted-foreground mb-2">Nom *</label>
+                      <label className="block text-sm font-medium text-foreground mb-2">Nom *</label>
                       <Input
                         required
                         value={formData.lastName}
                         onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                        className="bg-navy-800 border-border focus:border-gold text-foreground"
+                        className="bg-background border-border focus:border-gold-400 focus:ring-gold-400 h-12 rounded-xl"
                         placeholder="Dupont"
                       />
                     </div>
@@ -201,23 +191,23 @@ export const Contact = () => {
                   {/* Contact Row */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm text-muted-foreground mb-2">Courriel *</label>
+                      <label className="block text-sm font-medium text-foreground mb-2">Courriel *</label>
                       <Input
                         type="email"
                         required
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="bg-navy-800 border-border focus:border-gold text-foreground"
+                        className="bg-background border-border focus:border-gold-400 focus:ring-gold-400 h-12 rounded-xl"
                         placeholder="jean.dupont@email.com"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-muted-foreground mb-2">Téléphone</label>
+                      <label className="block text-sm font-medium text-foreground mb-2">Téléphone</label>
                       <Input
                         type="tel"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="bg-navy-800 border-border focus:border-gold text-foreground"
+                        className="bg-background border-border focus:border-gold-400 focus:ring-gold-400 h-12 rounded-xl"
                         placeholder="(514) 555-0123"
                       />
                     </div>
@@ -225,22 +215,22 @@ export const Contact = () => {
 
                   {/* Advisor Selection */}
                   <div>
-                    <label className="block text-sm text-muted-foreground mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Choisir un conseiller
                     </label>
                     <Select
                       value={formData.advisor}
                       onValueChange={(value) => setFormData({ ...formData, advisor: value })}
                     >
-                      <SelectTrigger className="bg-navy-800 border-border focus:border-gold text-foreground">
+                      <SelectTrigger className="bg-background border-border focus:border-gold-400 focus:ring-gold-400 h-12 rounded-xl">
                         <SelectValue placeholder="Sélectionner un conseiller" />
                       </SelectTrigger>
-                      <SelectContent className="bg-navy-800 border-border">
+                      <SelectContent className="bg-background border-border rounded-xl">
                         {advisors.map((advisor) => (
                           <SelectItem
                             key={advisor.value}
                             value={advisor.value}
-                            className="text-foreground hover:bg-navy-700 focus:bg-navy-700"
+                            className="focus:bg-gold-50 focus:text-foreground rounded-lg"
                           >
                             {advisor.label}
                           </SelectItem>
@@ -251,22 +241,22 @@ export const Contact = () => {
 
                   {/* Service Selection */}
                   <div>
-                    <label className="block text-sm text-muted-foreground mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Service souhaité
                     </label>
                     <Select
                       value={formData.service}
                       onValueChange={(value) => setFormData({ ...formData, service: value })}
                     >
-                      <SelectTrigger className="bg-navy-800 border-border focus:border-gold text-foreground">
+                      <SelectTrigger className="bg-background border-border focus:border-gold-400 focus:ring-gold-400 h-12 rounded-xl">
                         <SelectValue placeholder="Sélectionner un service" />
                       </SelectTrigger>
-                      <SelectContent className="bg-navy-800 border-border">
+                      <SelectContent className="bg-background border-border rounded-xl">
                         {services.map((service) => (
                           <SelectItem
                             key={service.value}
                             value={service.value}
-                            className="text-foreground hover:bg-navy-700 focus:bg-navy-700"
+                            className="focus:bg-gold-50 focus:text-foreground rounded-lg"
                           >
                             {service.label}
                           </SelectItem>
@@ -277,11 +267,11 @@ export const Contact = () => {
 
                   {/* Message */}
                   <div>
-                    <label className="block text-sm text-muted-foreground mb-2">Message</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">Message</label>
                     <Textarea
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="bg-navy-800 border-border focus:border-gold text-foreground min-h-[120px] resize-none"
+                      className="bg-background border-border focus:border-gold-400 focus:ring-gold-400 min-h-[120px] resize-none rounded-xl"
                       placeholder="Décrivez brièvement votre situation ou vos besoins..."
                     />
                   </div>
@@ -290,14 +280,14 @@ export const Contact = () => {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full btn-luxury rounded-sm text-base tracking-widest uppercase py-6 disabled:opacity-50"
+                    className="w-full btn-primary h-14 text-base rounded-xl disabled:opacity-50"
                   >
                     {isSubmitting ? (
                       <span className="flex items-center gap-2">
                         <motion.div
                           animate={{ rotate: 360 }}
                           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="w-5 h-5 border-2 border-navy-900 border-t-transparent rounded-full"
+                          className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full"
                         />
                         Envoi en cours...
                       </span>

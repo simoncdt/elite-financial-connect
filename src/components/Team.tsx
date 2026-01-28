@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { Mail, Linkedin } from "lucide-react";
+import { Mail, Linkedin, ArrowUpRight } from "lucide-react";
 
 // Import team photos
 import abdelbariPhoto from "@/assets/team/abdelbari-nasri.jpg";
@@ -81,23 +81,18 @@ const teamMembers: TeamMember[] = [
   },
 ];
 
-const TeamCard = ({ member, index }: { member: TeamMember; index: number }) => {
-  const initials = member.name
-    .split(" ")
-    .map((n) => n[0])
-    .join("");
-
+const LeaderCard = ({ member, index }: { member: TeamMember; index: number }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
-      className={`group relative ${member.isLeader ? "md:col-span-1" : ""}`}
+      className="group"
     >
-      <div className="glass-card rounded-lg overflow-hidden border border-border hover:border-gold/30 transition-all duration-500 hover:shadow-glow">
-        {/* Photo Container */}
-        <div className="relative aspect-[3/4] overflow-hidden bg-navy-800">
+      <div className="relative overflow-hidden rounded-3xl bg-background border border-border">
+        {/* Photo */}
+        <div className="relative aspect-[4/5] overflow-hidden">
           {member.photo ? (
             <img
               src={member.photo}
@@ -105,39 +100,77 @@ const TeamCard = ({ member, index }: { member: TeamMember; index: number }) => {
               className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-navy-700 to-navy-800">
-              <span className="text-5xl font-serif text-gold/30">{initials}</span>
+            <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+              <span className="text-6xl font-light text-gray-300">
+                {member.name.split(" ").map((n) => n[0]).join("")}
+              </span>
             </div>
           )}
           
-          {/* Overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-navy-900 via-transparent to-transparent opacity-80" />
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
+        </div>
+
+        {/* Content */}
+        <div className="absolute bottom-0 left-0 right-0 p-6">
+          <h3 className="text-xl font-semibold text-foreground mb-1">{member.name}</h3>
+          <p className="text-gold-500 text-sm font-medium mb-4">{member.role}</p>
           
           {/* Social Links */}
-          <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-            <div>
-              <h3 className="font-serif text-lg text-foreground mb-1">{member.name}</h3>
-              <p className="text-gold text-sm tracking-wide">{member.role}</p>
-            </div>
-            <div className="flex gap-2">
-              <a
-                href={`mailto:${member.email}`}
-                className="w-10 h-10 rounded-full bg-background/20 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-gold hover:text-navy-900 transition-all duration-300"
-                aria-label={`Email ${member.name}`}
-              >
-                <Mail className="w-4 h-4" />
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-background/20 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-gold hover:text-navy-900 transition-all duration-300"
-                aria-label={`LinkedIn ${member.name}`}
-              >
-                <Linkedin className="w-4 h-4" />
-              </a>
-            </div>
+          <div className="flex gap-2">
+            <a
+              href={`mailto:${member.email}`}
+              className="w-10 h-10 rounded-full bg-background/90 backdrop-blur-sm border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-background hover:border-gold-300 transition-all"
+              aria-label={`Email ${member.name}`}
+            >
+              <Mail className="w-4 h-4" />
+            </a>
+            <a
+              href="#"
+              className="w-10 h-10 rounded-full bg-background/90 backdrop-blur-sm border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-background hover:border-gold-300 transition-all"
+              aria-label={`LinkedIn ${member.name}`}
+            >
+              <Linkedin className="w-4 h-4" />
+            </a>
           </div>
         </div>
       </div>
+    </motion.div>
+  );
+};
+
+const AdvisorCard = ({ member, index }: { member: TeamMember; index: number }) => {
+  const initials = member.name.split(" ").map((n) => n[0]).join("");
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.05 }}
+    >
+      <a
+        href={`mailto:${member.email}`}
+        className="group block p-5 bg-background rounded-2xl border border-border hover:border-gold-300 hover:shadow-lg transition-all duration-300"
+      >
+        {/* Avatar */}
+        <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mb-4 group-hover:bg-gold-100 transition-colors">
+          <span className="text-lg font-medium text-gray-400 group-hover:text-gold-600 transition-colors">
+            {initials}
+          </span>
+        </div>
+
+        {/* Info */}
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <h4 className="font-medium text-foreground text-sm mb-0.5 group-hover:text-gold-600 transition-colors">
+              {member.name}
+            </h4>
+            <p className="text-muted-foreground text-xs">{member.role}</p>
+          </div>
+          <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-gold-500 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 flex-shrink-0 mt-1" />
+        </div>
+      </a>
     </motion.div>
   );
 };
@@ -150,70 +183,52 @@ export const Team = () => {
   const advisors = teamMembers.filter((m) => !m.isLeader);
 
   return (
-    <section id="team" className="py-24 lg:py-32 bg-navy-800 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
-      
-      <div className="container mx-auto px-6 lg:px-12">
+    <section id="team" className="py-20 lg:py-32 bg-background relative">
+      <div className="section-container">
         {/* Section Header */}
         <motion.div
           ref={ref}
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="text-center max-w-3xl mx-auto mb-16 lg:mb-20"
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto mb-16"
         >
-          <span className="text-gold text-sm tracking-[0.3em] uppercase mb-4 block">
-            Notre Équipe
+          <span className="inline-block text-gold-500 text-sm font-medium tracking-wider uppercase mb-4">
+            Notre équipe
           </span>
-          <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground mb-6">
-            Les <span className="text-gradient">Simplificateurs</span> à Votre Service
+          <h2 className="text-foreground mb-6">
+            Les <span className="text-gradient-gold">Simplificateurs</span> à votre service
           </h2>
-          <p className="text-muted-foreground text-lg leading-relaxed">
+          <p className="text-muted-foreground text-lg">
             Une équipe de professionnels passionnés, dédiés à simplifier votre vie financière 
             et à vous accompagner vers l'atteinte de vos objectifs.
           </p>
         </motion.div>
 
         {/* Leaders Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16">
           {leaders.map((member, index) => (
-            <TeamCard key={member.email} member={member} index={index} />
+            <LeaderCard key={member.email} member={member} index={index} />
           ))}
         </div>
 
         {/* Divider */}
-        <div className="divider-gold my-12" />
+        <div className="divider mb-16" />
+
+        {/* Advisors Label */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="text-center text-muted-foreground text-sm mb-8"
+        >
+          Notre équipe de conseillers
+        </motion.p>
 
         {/* Advisors Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           {advisors.map((member, index) => (
-            <motion.div
-              key={member.email}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.05 }}
-              className="group"
-            >
-              <div className="glass-card rounded-lg p-4 text-center border border-border hover:border-gold/30 transition-all duration-300">
-                {/* Avatar */}
-                <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-navy-600 to-navy-700 flex items-center justify-center">
-                  <span className="text-lg font-serif text-gold/50">
-                    {member.name.split(" ").map((n) => n[0]).join("")}
-                  </span>
-                </div>
-                <h4 className="font-serif text-sm text-foreground mb-1 truncate">{member.name}</h4>
-                <p className="text-gold/70 text-xs">{member.role}</p>
-                <a
-                  href={`mailto:${member.email}`}
-                  className="mt-3 inline-flex items-center justify-center w-8 h-8 rounded-full bg-gold/10 text-gold hover:bg-gold hover:text-navy-900 transition-all duration-300"
-                  aria-label={`Email ${member.name}`}
-                >
-                  <Mail className="w-3.5 h-3.5" />
-                </a>
-              </div>
-            </motion.div>
+            <AdvisorCard key={member.email} member={member} index={index} />
           ))}
         </div>
       </div>
