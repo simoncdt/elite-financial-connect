@@ -192,13 +192,24 @@ const TeamPage = () => {
                   <div className="bg-background rounded-2xl border border-border p-5 
                                hover:border-gold-300 hover:shadow-lg transition-all duration-300 h-full">
                     {/* Avatar */}
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 
-                                  flex items-center justify-center mb-4 
-                                  group-hover:from-gold-100 group-hover:to-gold-50 transition-all">
-                      <span className="text-xl font-medium text-gray-400 group-hover:text-gold-600 transition-colors">
-                        {member.name.split(" ").map((n) => n[0]).join("")}
-                      </span>
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden mb-4">
+                      {member.photo ? (
+                        <img
+                          src={member.photo}
+                          alt={member.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 
+                          flex items-center justify-center 
+                          group-hover:from-gold-100 group-hover:to-gold-50 transition-all">
+                          <span className="text-xl font-medium text-gray-400 group-hover:text-gold-600 transition-colors">
+                            {member.name.split(" ").map((n) => n[0]).join("")}
+                          </span>
+                        </div>
+                      )}
                     </div>
+
 
                     {/* Info */}
                     <h4 className="font-semibold text-foreground mb-1 group-hover:text-gold-600 transition-colors">

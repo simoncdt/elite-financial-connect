@@ -2,6 +2,8 @@
 import abdelbariPhoto from "@/assets/team/abdelbari-nasri.jpg";
 import helaPhoto from "@/assets/team/hela-taghouti.jpg";
 import ameliePhoto from "@/assets/team/amelie-bolduc.jpg";
+import maryamphoto from "@/assets/team/m.jpeg";
+
 
 export interface TeamMember {
   id: string;
@@ -60,7 +62,7 @@ export const teamMembers: TeamMember[] = [
     name: "Maryam Benlimam",
     role: "Conseillère Financière",
     email: "maryam.benlimam@agc.ia.ca",
-    photo: null,
+    photo: maryamphoto,
     description: "Passionnée par l'accompagnement client et la planification financière personnalisée.",
   },
   {
