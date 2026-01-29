@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronRight } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 const navLinks = [
-  { name: "Services", href: "#services" },
-  { name: "Équipe", href: "#team" },
-  { name: "À Propos", href: "#about" },
-  { name: "Contact", href: "#contact" },
+  { name: "Accueil", href: "/" },
+  { name: "Services", href: "/#services" },
+  { name: "Équipe", href: "/equipe" },
+  { name: "Blog", href: "/blog" },
+  { name: "Contact", href: "/#contact" },
 ];
 
 export const Header = () => {
@@ -48,8 +50,8 @@ export const Header = () => {
         <div className="section-container">
           <nav className="flex items-center justify-between">
             {/* Logo */}
-            <a
-              href="#"
+            <Link
+              to="/"
               className="flex items-center gap-2.5 group"
             >
               <div className="relative w-9 h-9 rounded-xl bg-primary flex items-center justify-center overflow-hidden">
@@ -63,30 +65,40 @@ export const Header = () => {
                   Financiers
                 </span>
               </div>
-            </a>
+            </Link>
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-8">
               {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="link-animated text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {link.name}
-                </a>
+                link.href.startsWith("/") && !link.href.includes("#") ? (
+                  <Link
+                    key={link.name}
+                    to={link.href}
+                    className="link-animated text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.name}
+                  </Link>
+                ) : (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    className="link-animated text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.name}
+                  </a>
+                )
               ))}
             </div>
 
             {/* CTA Button */}
             <div className="hidden lg:flex items-center gap-4">
-              <a
-                href="#contact"
+              <Link
+                to="/equipe"
                 className="btn-primary gap-2"
               >
                 <span>Prendre rendez-vous</span>
                 <ChevronRight className="w-4 h-4" />
-              </a>
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}
@@ -128,18 +140,36 @@ export const Header = () => {
             >
               <div className="flex flex-col gap-2">
                 {navLinks.map((link, index) => (
-                  <motion.a
-                    key={link.name}
-                    href={link.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="flex items-center justify-between py-4 text-lg font-medium text-foreground hover:text-muted-foreground transition-colors border-b border-border"
-                  >
-                    {link.name}
-                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                  </motion.a>
+                  link.href.startsWith("/") && !link.href.includes("#") ? (
+                    <motion.div
+                      key={link.name}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <Link
+                        to={link.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center justify-between py-4 text-lg font-medium text-foreground hover:text-muted-foreground transition-colors border-b border-border"
+                      >
+                        {link.name}
+                        <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                      </Link>
+                    </motion.div>
+                  ) : (
+                    <motion.a
+                      key={link.name}
+                      href={link.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="flex items-center justify-between py-4 text-lg font-medium text-foreground hover:text-muted-foreground transition-colors border-b border-border"
+                    >
+                      {link.name}
+                      <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                    </motion.a>
+                  )
                 ))}
               </div>
               
@@ -149,13 +179,13 @@ export const Header = () => {
                 transition={{ delay: 0.2 }}
                 className="mt-8"
               >
-                <a
-                  href="#contact"
+                <Link
+                  to="/equipe"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="btn-primary w-full justify-center text-base py-4"
                 >
                   Prendre rendez-vous
-                </a>
+                </Link>
               </motion.div>
             </motion.nav>
           </motion.div>
