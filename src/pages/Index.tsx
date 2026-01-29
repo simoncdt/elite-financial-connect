@@ -5,6 +5,7 @@ import { Team } from "@/components/Team";
 import { About } from "@/components/About";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
+import { TeamLite } from "@/components/TeamLite";
 
 const Index = () => {
   return (
@@ -13,7 +14,12 @@ const Index = () => {
       <main>
         <Hero />
         <Services />
-        <Team />
+
+        {/* Section Team principale : seuls les leaders avec photo */}
+        <section id="team-leaders">
+          <TeamLite />
+        </section>
+
         <About />
         <Contact />
       </main>

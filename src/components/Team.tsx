@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { teamMembers, getLeaders, getAdvisors, TeamMember } from "@/lib/team-data";
 import { AppointmentModal } from "./AppointmentModal";
 
-const LeaderCard = ({ 
+export const LeaderCard = ({ 
   member, 
   index, 
   onBookAppointment 
@@ -207,14 +207,7 @@ export const Team = () => {
           <div className="divider mb-16" />
 
           {/* Advisors Label */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-center text-muted-foreground text-sm mb-8"
-          >
-            Notre équipe de conseillers
-          </motion.p>
+          
 
           {/* Advisors Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
