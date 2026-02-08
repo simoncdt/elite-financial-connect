@@ -3,6 +3,7 @@ import abdelbariPhoto from "@/assets/team/abdelbari-nasri.jpg";
 import helaPhoto from "@/assets/team/hela-taghouti.jpg";
 import ameliePhoto from "@/assets/team/amelie-bolduc.jpg";
 import maryamphoto from "@/assets/team/m.jpeg";
+import se from "@/assets/team/se.jpeg";
 
 
 export interface TeamMember {
@@ -94,8 +95,8 @@ export const teamMembers: TeamMember[] = [
     name: "Mamadou Seck",
     role: "Conseiller Financier",
     email: "mamadou.seck@agc.ia.ca",
-    photo: null,
-    description: "Conseiller attentif aux besoins de ses clients, offrant des conseils clairs et accessibles.",
+    photo: se,
+    description: "Conseiller financier expérimenté, spécialisé dans l’accompagnement personnalisé des clients afin d’optimiser leur santé financière et d’atteindre leurs objectifs à court, moyen et long terme. Je privilégie une approche proactive fondée sur la confiance, l’écoute et la transparence pour offrir des solutions durables, sécuritaires et performantes adaptées aux besoins particuliers de chaque client Orienté résultats et doté d’excellentes compétences relationnelles, je m’engage à offrir une expérience client exemplaire et à bâtir des stratégies financières durables, sécuritaires et performantes.",
   },
   {
     id: "thouraya-saghrouni",
