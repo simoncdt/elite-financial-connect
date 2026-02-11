@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import Blog from "./pages/Blog";
 import TeamPage from "./pages/TeamPage";
 import AdvisorLinktree from "./pages/AdvisorLinktree";
+import Admin from "./pages/Admin";
 import { CookieConsent } from "./components/CookieConsent";
 import { EngagementPopup } from "./components/EngagementPopup";
 
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/equipe" element={<TeamPage />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/conseiller/:advisorId" element={<AdvisorLinktree />} />
+          <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
