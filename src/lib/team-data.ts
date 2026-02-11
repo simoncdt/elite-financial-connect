@@ -4,6 +4,7 @@ import helaPhoto from "@/assets/team/hela-taghouti.jpg";
 import ameliePhoto from "@/assets/team/amelie-bolduc.jpg";
 import maryamphoto from "@/assets/team/m.jpeg";
 import se from "@/assets/team/se.jpeg";
+import da from "@/assets/team/d.jpeg";
 
 
 export interface TeamMember {
@@ -71,7 +72,7 @@ export const teamMembers: TeamMember[] = [
     name: "Dalel Djeffel",
     role: "Conseillère Financière",
     email: "dalel.djeffel@agc.ia.ca",
-    photo: null,
+    photo: da,
     description: "Experte dans l'élaboration de stratégies financières sur mesure pour une sécurité à long terme.",
   },
   {
@@ -96,7 +97,7 @@ export const teamMembers: TeamMember[] = [
     role: "Conseiller Financier",
     email: "mamadou.seck@agc.ia.ca",
     photo: se,
-    description: "Conseiller financier expérimenté, spécialisé dans l’accompagnement personnalisé des clients afin d’optimiser leur santé financière et d’atteindre leurs objectifs à court, moyen et long terme. Je privilégie une approche proactive fondée sur la confiance, l’écoute et la transparence pour offrir des solutions durables, sécuritaires et performantes adaptées aux besoins particuliers de chaque client Orienté résultats et doté d’excellentes compétences relationnelles, je m’engage à offrir une expérience client exemplaire et à bâtir des stratégies financières durables, sécuritaires et performantes.",
+    description: "Conseiller financier expérimenté, spécialisé dans l’accompagnement personnalisé des clients afin d’optimiser leur santé financière et d’atteindre leurs objectifs à court, moyen et long terme. Je privilégie une approche proactive fondée sur la confiance, l’écoute et la transparence pour offrir des solutions durables, sécuritaires et performantes adaptées aux besoins particuliers de chaque client.Mamadou Seck est un expert dans l’accompagnement des clients à chaque étape de leur planification financière, que ce soit pour la gestion des investissements, la préparation à la retraite, la protection du patrimoine, ou l’optimisation fiscale. Orienté résultats et doté d’excellentes compétences relationnelles, je m’engage à offrir une expérience client exemplaire et à bâtir des stratégies financières durables, sécuritaires et performantes",
   },
   {
     id: "thouraya-saghrouni",
