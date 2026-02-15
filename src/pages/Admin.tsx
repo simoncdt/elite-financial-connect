@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useCallback } from "react";
 import { useAdminAuth } from "@/hooks/use-admin-auth";
 import {
   useTeamMembers,
@@ -7,7 +6,6 @@ import {
   useUpdateTeamMember,
   useDeleteTeamMember,
   useUploadTeamPhoto,
-  TeamMemberDB,
 } from "@/hooks/use-team-members";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -24,21 +22,25 @@ const AdminLogin = ({ onLogin }: { onLogin: (e: string, p: string) => Promise<vo
   const [loading, setLoading] = useState(false);
   const [setupDone, setSetupDone] = useState(false);
 
-  const setupAdmin = async () => {
-    setLoading(true);
-    try {
-      const res = await supabase.functions.invoke("setup-admin");
-      if (res.error) throw res.error;
-      setSetupDone(true);
-      toast({ title: "Compte admin créé", description: "Utilisez admin@simplificateurs.ca / admin" });
-    } catch {
-      // Admin may already exist
-      setSetupDone(true);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => { setupAdmin(); }, []);
+  useEffect(() => {
+    let cancelled = false;
+    const setupAdmin = async () => {
+      setLoading(true);
+      try {
+        const res = await supabase.functions.invoke("setup-admin");
+        if (res.error) throw res.error;
+        if (!cancelled) {
+          setSetupDone(true);
+          toast({ title: "Compte admin créé", description: "Utilisez admin@simplificateurs.ca / admin" });
+        }
+      } catch {
+        if (!cancelled) setSetupDone(true);
+      }
+      if (!cancelled) setLoading(false);
+    };
+    setupAdmin();
+    return () => { cancelled = true; };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,11 +56,7 @@ const AdminLogin = ({ onLogin }: { onLogin: (e: string, p: string) => Promise<vo
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-secondary/30 p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-sm"
-      >
+      <div className="w-full max-w-sm">
         <div className="bg-background rounded-3xl border border-border p-8 shadow-xl">
           <div className="text-center mb-8">
             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
@@ -71,33 +69,20 @@ const AdminLogin = ({ onLogin }: { onLogin: (e: string, p: string) => Promise<vo
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-foreground mb-1.5">Courriel</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 bg-secondary rounded-xl text-foreground border border-transparent focus:ring-2 focus:ring-primary focus:outline-none"
-                required
-              />
+                required />
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-1.5">Mot de passe</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                 placeholder={setupDone ? "admin (par défaut)" : ""}
                 className="w-full px-4 py-3 bg-secondary rounded-xl text-foreground border border-transparent focus:ring-2 focus:ring-primary focus:outline-none"
-                required
-              />
+                required />
             </div>
-
             {error && <p className="text-sm text-destructive">{error}</p>}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-            >
+            <button type="submit" disabled={loading}
+              className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
               Se connecter
             </button>
@@ -106,7 +91,7 @@ const AdminLogin = ({ onLogin }: { onLogin: (e: string, p: string) => Promise<vo
         <p className="text-center text-xs text-muted-foreground mt-4">
           <Link to="/" className="hover:text-foreground transition-colors">← Retour au site</Link>
         </p>
-      </motion.div>
+      </div>
     </div>
   );
 };
@@ -150,13 +135,8 @@ const MemberForm = ({
   };
 
   return (
-    <motion.form
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: "auto" }}
-      exit={{ opacity: 0, height: 0 }}
-      onSubmit={handleSubmit}
-      className="bg-background border border-border rounded-2xl p-6 space-y-4"
-    >
+    <form onSubmit={handleSubmit}
+      className="bg-background border border-border rounded-2xl p-6 space-y-4 animate-in fade-in duration-200">
       <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
         {isNew ? <Plus className="w-5 h-5" /> : <Pencil className="w-5 h-5" />}
         {isNew ? "Nouveau conseiller" : `Modifier ${initial.name}`}
@@ -243,7 +223,7 @@ const MemberForm = ({
           <X className="w-4 h-4" /> Annuler
         </button>
       </div>
-    </motion.form>
+    </form>
   );
 };
 
@@ -264,28 +244,30 @@ const AdminDashboard = () => {
   const [changingPw, setChangingPw] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
-  const handleCreate = async (data: MemberFormData, photo?: File) => {
+  const handleCreate = useCallback((data: MemberFormData, photo?: File) => {
     setShowCreate(false);
     toast({ title: "Conseiller ajouté" });
-    let photo_url: string | null = null;
-    if (photo) {
-      try {
-        photo_url = await uploadPhoto.mutateAsync({ file: photo, slug: data.slug });
-      } catch (err: any) {
-        toast({ title: "Erreur photo", description: err.message, variant: "destructive" });
-      }
-    }
-    try {
-      await createMember.mutateAsync({ ...data, photo_url });
-    } catch (err: any) {
-      toast({ title: "Erreur création", description: err.message, variant: "destructive" });
-    }
-  };
 
-  const handleUpdate = (id: string, data: MemberFormData, photo?: File) => {
+    if (photo) {
+      uploadPhoto.mutateAsync({ file: photo, slug: data.slug }).then((photo_url) => {
+        createMember.mutate({ ...data, photo_url });
+      }).catch((err) => {
+        toast({ title: "Erreur photo", description: err.message, variant: "destructive" });
+        createMember.mutate({ ...data, photo_url: null });
+      });
+    } else {
+      createMember.mutate({ ...data, photo_url: null });
+    }
+  }, [createMember, uploadPhoto]);
+
+  const handleUpdate = useCallback((id: string, data: MemberFormData, photo?: File) => {
+    // Close form FIRST — no async, no delay, no animation exit blocking
     setEditingId(null);
     toast({ title: "Conseiller modifié" });
+
+    // Fire mutation in background (optimistic update handles instant UI)
     updateMember.mutate({ id, ...data });
+
     if (photo) {
       uploadPhoto.mutateAsync({ file: photo, slug: data.slug }).then((photo_url) => {
         updateMember.mutate({ id, photo_url });
@@ -293,13 +275,13 @@ const AdminDashboard = () => {
         toast({ title: "Erreur photo", description: err.message, variant: "destructive" });
       });
     }
-  };
+  }, [updateMember, uploadPhoto]);
 
-  const handleDelete = async (id: string) => {
-    await deleteMember.mutateAsync(id);
+  const handleDelete = useCallback((id: string) => {
     setDeleteConfirm(null);
     toast({ title: "Conseiller supprimé" });
-  };
+    deleteMember.mutate(id);
+  }, [deleteMember]);
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -323,6 +305,16 @@ const AdminDashboard = () => {
     }
     setChangingPw(false);
   };
+
+  const startEdit = useCallback((id: string) => {
+    setEditingId(id);
+    setShowCreate(false);
+    setDeleteConfirm(null);
+  }, []);
+
+  const cancelEdit = useCallback(() => {
+    setEditingId(null);
+  }, []);
 
   return (
     <div className="min-h-screen bg-secondary/30">
@@ -358,42 +350,35 @@ const AdminDashboard = () => {
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {/* Change Password */}
-        <AnimatePresence>
-          {showPasswordForm && (
-            <motion.form
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              onSubmit={handleChangePassword}
-              className="bg-background border border-border rounded-2xl p-6 mb-6 space-y-4"
-            >
-              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <Key className="w-5 h-5" /> Changer le mot de passe
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Nouveau mot de passe</label>
-                  <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
-                    required className="w-full px-3 py-2.5 bg-secondary rounded-xl text-foreground border border-transparent focus:ring-2 focus:ring-primary focus:outline-none text-sm" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">Confirmer</label>
-                  <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
-                    required className="w-full px-3 py-2.5 bg-secondary rounded-xl text-foreground border border-transparent focus:ring-2 focus:ring-primary focus:outline-none text-sm" />
-                </div>
+        {showPasswordForm && (
+          <form onSubmit={handleChangePassword}
+            className="bg-background border border-border rounded-2xl p-6 mb-6 space-y-4 animate-in fade-in duration-200">
+            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+              <Key className="w-5 h-5" /> Changer le mot de passe
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">Nouveau mot de passe</label>
+                <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
+                  required className="w-full px-3 py-2.5 bg-secondary rounded-xl text-foreground border border-transparent focus:ring-2 focus:ring-primary focus:outline-none text-sm" />
               </div>
-              <div className="flex gap-3">
-                <button type="submit" disabled={changingPw}
-                  className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium text-sm hover:bg-primary/90 disabled:opacity-50 flex items-center gap-2">
-                  {changingPw ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                  Enregistrer
-                </button>
-                <button type="button" onClick={() => setShowPasswordForm(false)}
-                  className="px-6 py-2.5 bg-secondary text-foreground rounded-xl text-sm">Annuler</button>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">Confirmer</label>
+                <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+                  required className="w-full px-3 py-2.5 bg-secondary rounded-xl text-foreground border border-transparent focus:ring-2 focus:ring-primary focus:outline-none text-sm" />
               </div>
-            </motion.form>
-          )}
-        </AnimatePresence>
+            </div>
+            <div className="flex gap-3">
+              <button type="submit" disabled={changingPw}
+                className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium text-sm hover:bg-primary/90 disabled:opacity-50 flex items-center gap-2">
+                {changingPw ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                Enregistrer
+              </button>
+              <button type="button" onClick={() => setShowPasswordForm(false)}
+                className="px-6 py-2.5 bg-secondary text-foreground rounded-xl text-sm">Annuler</button>
+            </div>
+          </form>
+        )}
 
         {/* Team Members */}
         <div className="flex items-center justify-between mb-6">
@@ -407,13 +392,17 @@ const AdminDashboard = () => {
         </div>
 
         {/* Create Form */}
-        <AnimatePresence>
-          {showCreate && (
-            <div className="mb-6">
-              <MemberForm initial={emptyForm} onSave={handleCreate} onCancel={() => setShowCreate(false)} isNew />
-            </div>
-          )}
-        </AnimatePresence>
+        {showCreate && (
+          <div className="mb-6">
+            <MemberForm
+              key="create-form"
+              initial={emptyForm}
+              onSave={handleCreate}
+              onCancel={() => setShowCreate(false)}
+              isNew
+            />
+          </div>
+        )}
 
         {/* Members List */}
         {isLoading ? (
@@ -424,74 +413,72 @@ const AdminDashboard = () => {
           <div className="space-y-3">
             {members?.map((member) => (
               <div key={member.id}>
-                <AnimatePresence mode="wait">
-                  {editingId === member.id ? (
-                    <MemberForm
-                      key={`edit-${member.id}`}
-                      initial={{
-                        slug: member.slug, name: member.name, role: member.role, email: member.email,
-                        is_leader: member.is_leader, description: member.description || "",
-                        phone: member.phone || "", linkedin: member.linkedin || "", facebook: member.facebook || "",
-                        display_order: member.display_order,
-                      }}
-                      onSave={(data, photo) => handleUpdate(member.id, data, photo)}
-                      onCancel={() => setEditingId(null)}
-                      isNew={false}
-                    />
-                  ) : (
-                    <motion.div layout className="bg-background border border-border rounded-2xl p-4 flex items-center gap-4 hover:border-primary/30 transition-all">
-                      {/* Avatar */}
-                      <div className="w-12 h-12 rounded-xl overflow-hidden bg-secondary flex-shrink-0">
-                        {member.photo_url ? (
-                          <img src={member.photo_url} alt={member.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-muted-foreground font-medium">
-                            {member.name.split(" ").map((n) => n[0]).join("")}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-medium text-foreground text-sm truncate">{member.name}</h4>
-                          {member.is_leader && (
-                            <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full font-medium">Senior</span>
-                          )}
+                {editingId === member.id ? (
+                  <MemberForm
+                    key={`edit-${member.id}`}
+                    initial={{
+                      slug: member.slug, name: member.name, role: member.role, email: member.email,
+                      is_leader: member.is_leader, description: member.description || "",
+                      phone: member.phone || "", linkedin: member.linkedin || "", facebook: member.facebook || "",
+                      display_order: member.display_order,
+                    }}
+                    onSave={(data, photo) => handleUpdate(member.id, data, photo)}
+                    onCancel={cancelEdit}
+                    isNew={false}
+                  />
+                ) : (
+                  <div className="bg-background border border-border rounded-2xl p-4 flex items-center gap-4 hover:border-primary/30 transition-all">
+                    {/* Avatar */}
+                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-secondary flex-shrink-0">
+                      {member.photo_url ? (
+                        <img src={member.photo_url} alt={member.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground font-medium">
+                          {member.name.split(" ").map((n) => n[0]).join("")}
                         </div>
-                        <p className="text-muted-foreground text-xs truncate">{member.email}</p>
-                      </div>
+                      )}
+                    </div>
 
-                      {/* Order */}
-                      <span className="text-xs text-muted-foreground hidden sm:block">#{member.display_order}</span>
-
-                      {/* Actions */}
-                      <div className="flex items-center gap-1.5">
-                        <button onClick={() => { setEditingId(member.id); setShowCreate(false); }}
-                          className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-all">
-                          <Pencil className="w-4 h-4" />
-                        </button>
-                        {deleteConfirm === member.id ? (
-                          <div className="flex items-center gap-1">
-                            <button onClick={() => handleDelete(member.id)}
-                              className="px-3 py-1.5 bg-destructive text-destructive-foreground rounded-lg text-xs font-medium">
-                              Confirmer
-                            </button>
-                            <button onClick={() => setDeleteConfirm(null)}
-                              className="px-3 py-1.5 bg-secondary text-foreground rounded-lg text-xs">
-                              Non
-                            </button>
-                          </div>
-                        ) : (
-                          <button onClick={() => setDeleteConfirm(member.id)}
-                            className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-medium text-foreground text-sm truncate">{member.name}</h4>
+                        {member.is_leader && (
+                          <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full font-medium">Senior</span>
                         )}
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      <p className="text-muted-foreground text-xs truncate">{member.email}</p>
+                    </div>
+
+                    {/* Order */}
+                    <span className="text-xs text-muted-foreground hidden sm:block">#{member.display_order}</span>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => startEdit(member.id)}
+                        className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-all">
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      {deleteConfirm === member.id ? (
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => handleDelete(member.id)}
+                            className="px-3 py-1.5 bg-destructive text-destructive-foreground rounded-lg text-xs font-medium">
+                            Confirmer
+                          </button>
+                          <button onClick={() => setDeleteConfirm(null)}
+                            className="px-3 py-1.5 bg-secondary text-foreground rounded-lg text-xs">
+                            Non
+                          </button>
+                        </div>
+                      ) : (
+                        <button onClick={() => setDeleteConfirm(member.id)}
+                          className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
