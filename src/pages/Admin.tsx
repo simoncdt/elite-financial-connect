@@ -141,7 +141,6 @@ const MemberForm = ({
 }) => {
   const [form, setForm] = useState<MemberFormData>(initial);
   const [photo, setPhoto] = useState<File | null>(null);
-  const [saving, setSaving] = useState(false);
 
   const set = (k: keyof MemberFormData, v: any) => setForm((p) => ({ ...p, [k]: v }));
 
@@ -234,9 +233,9 @@ const MemberForm = ({
       </div>
 
       <div className="flex gap-3 pt-2">
-        <button type="submit" disabled={saving}
-          className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium text-sm hover:bg-primary/90 transition-all disabled:opacity-50 flex items-center gap-2">
-          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+        <button type="submit"
+          className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium text-sm hover:bg-primary/90 transition-all flex items-center gap-2">
+          <Save className="w-4 h-4" />
           {isNew ? "Créer" : "Enregistrer"}
         </button>
         <button type="button" onClick={onCancel}
@@ -425,9 +424,10 @@ const AdminDashboard = () => {
           <div className="space-y-3">
             {members?.map((member) => (
               <div key={member.id}>
-                <AnimatePresence>
+                <AnimatePresence mode="wait">
                   {editingId === member.id ? (
                     <MemberForm
+                      key={`edit-${member.id}`}
                       initial={{
                         slug: member.slug, name: member.name, role: member.role, email: member.email,
                         is_leader: member.is_leader, description: member.description || "",
