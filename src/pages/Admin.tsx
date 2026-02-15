@@ -282,12 +282,22 @@ const AdminDashboard = () => {
   };
 
   const handleUpdate = async (id: string, data: MemberFormData, photo?: File) => {
-    let photo_url: string | undefined;
-    if (photo) {
-      photo_url = await uploadPhoto.mutateAsync({ file: photo, slug: data.slug });
-    }
-    await updateMember.mutateAsync({ id, ...data, ...(photo_url ? { photo_url } : {}) });
+    // Close form immediately for snappy UX
     setEditingId(null);
+    
+    // Start text update immediately (optimistic)
+    const textUpdate = updateMember.mutateAsync({ id, ...data });
+    
+    if (photo) {
+      // Upload photo in parallel, then patch photo_url
+      uploadPhoto.mutateAsync({ file: photo, slug: data.slug }).then((photo_url) => {
+        updateMember.mutate({ id, photo_url });
+      }).catch((err) => {
+        toast({ title: "Erreur photo", description: err.message, variant: "destructive" });
+      });
+    }
+    
+    await textUpdate;
     toast({ title: "Conseiller modifié" });
   };
 

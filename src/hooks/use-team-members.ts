@@ -78,7 +78,18 @@ export function useUpdateTeamMember() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["team-members"] }),
+    onMutate: async ({ id, ...updates }) => {
+      await qc.cancelQueries({ queryKey: ["team-members"] });
+      const previous = qc.getQueryData<TeamMemberDB[]>(["team-members"]);
+      qc.setQueryData<TeamMemberDB[]>(["team-members"], (old) =>
+        old?.map((m) => (m.id === id ? { ...m, ...updates, updated_at: new Date().toISOString() } : m))
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) qc.setQueryData(["team-members"], context.previous);
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: ["team-members"] }),
   });
 }
 
@@ -92,7 +103,18 @@ export function useDeleteTeamMember() {
         .eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["team-members"] }),
+    onMutate: async (id) => {
+      await qc.cancelQueries({ queryKey: ["team-members"] });
+      const previous = qc.getQueryData<TeamMemberDB[]>(["team-members"]);
+      qc.setQueryData<TeamMemberDB[]>(["team-members"], (old) =>
+        old?.filter((m) => m.id !== id)
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) qc.setQueryData(["team-members"], context.previous);
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: ["team-members"] }),
   });
 }
 
