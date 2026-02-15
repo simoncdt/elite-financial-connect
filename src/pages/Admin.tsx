@@ -135,7 +135,7 @@ const MemberForm = ({
   initial, onSave, onCancel, isNew,
 }: {
   initial: MemberFormData;
-  onSave: (data: MemberFormData, photo?: File) => Promise<void>;
+  onSave: (data: MemberFormData, photo?: File) => void;
   onCancel: () => void;
   isNew: boolean;
 }) => {
@@ -145,15 +145,9 @@ const MemberForm = ({
 
   const set = (k: keyof MemberFormData, v: any) => setForm((p) => ({ ...p, [k]: v }));
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSaving(true);
-    try {
-      await onSave(form, photo || undefined);
-    } catch (err: any) {
-      toast({ title: "Erreur", description: err.message, variant: "destructive" });
-    }
-    setSaving(false);
+    onSave(form, photo || undefined);
   };
 
   return (
@@ -272,33 +266,34 @@ const AdminDashboard = () => {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
   const handleCreate = async (data: MemberFormData, photo?: File) => {
-    let photo_url: string | null = null;
-    if (photo) {
-      photo_url = await uploadPhoto.mutateAsync({ file: photo, slug: data.slug });
-    }
-    await createMember.mutateAsync({ ...data, photo_url });
     setShowCreate(false);
     toast({ title: "Conseiller ajouté" });
+    let photo_url: string | null = null;
+    if (photo) {
+      try {
+        photo_url = await uploadPhoto.mutateAsync({ file: photo, slug: data.slug });
+      } catch (err: any) {
+        toast({ title: "Erreur photo", description: err.message, variant: "destructive" });
+      }
+    }
+    try {
+      await createMember.mutateAsync({ ...data, photo_url });
+    } catch (err: any) {
+      toast({ title: "Erreur création", description: err.message, variant: "destructive" });
+    }
   };
 
-  const handleUpdate = async (id: string, data: MemberFormData, photo?: File) => {
-    // Close form immediately for snappy UX
+  const handleUpdate = (id: string, data: MemberFormData, photo?: File) => {
     setEditingId(null);
-    
-    // Start text update immediately (optimistic)
-    const textUpdate = updateMember.mutateAsync({ id, ...data });
-    
+    toast({ title: "Conseiller modifié" });
+    updateMember.mutate({ id, ...data });
     if (photo) {
-      // Upload photo in parallel, then patch photo_url
       uploadPhoto.mutateAsync({ file: photo, slug: data.slug }).then((photo_url) => {
         updateMember.mutate({ id, photo_url });
       }).catch((err) => {
         toast({ title: "Erreur photo", description: err.message, variant: "destructive" });
       });
     }
-    
-    await textUpdate;
-    toast({ title: "Conseiller modifié" });
   };
 
   const handleDelete = async (id: string) => {
