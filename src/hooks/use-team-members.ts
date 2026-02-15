@@ -102,19 +102,24 @@ export function useUploadTeamPhoto() {
       const ext = file.name.split(".").pop();
       const path = `${slug}.${ext}`;
       
-      // Remove old file if exists
-      await supabase.storage.from("team-photos").remove([path]);
+      // Try to remove old file (ignore errors if it doesn't exist)
+      try {
+        await supabase.storage.from("team-photos").remove([path]);
+      } catch {
+        // File may not exist, that's fine
+      }
       
       const { error } = await supabase.storage
         .from("team-photos")
         .upload(path, file, { upsert: true });
-      if (error) throw error;
+      if (error) throw new Error(`Upload échoué: ${error.message}`);
 
       const { data: urlData } = supabase.storage
         .from("team-photos")
         .getPublicUrl(path);
 
-      return urlData.publicUrl;
+      // Add cache-busting param to force refresh
+      return `${urlData.publicUrl}?t=${Date.now()}`;
     },
   });
 }
