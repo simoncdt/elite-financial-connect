@@ -22,23 +22,14 @@ const AdminLogin = ({ onLogin }: { onLogin: (e: string, p: string) => Promise<vo
   const [loading, setLoading] = useState(false);
   const [setupDone, setSetupDone] = useState(false);
 
+  // Setup admin in background — non-blocking, doesn't affect login form
   useEffect(() => {
     let cancelled = false;
-    const setupAdmin = async () => {
-      setLoading(true);
-      try {
-        const res = await supabase.functions.invoke("setup-admin");
-        if (res.error) throw res.error;
-        if (!cancelled) {
-          setSetupDone(true);
-          toast({ title: "Compte admin créé", description: "Utilisez admin@simplificateurs.ca / admin" });
-        }
-      } catch {
-        if (!cancelled) setSetupDone(true);
-      }
-      if (!cancelled) setLoading(false);
-    };
-    setupAdmin();
+    supabase.functions.invoke("setup-admin").then(() => {
+      if (!cancelled) setSetupDone(true);
+    }).catch(() => {
+      if (!cancelled) setSetupDone(true);
+    });
     return () => { cancelled = true; };
   }, []);
 
@@ -431,7 +422,7 @@ const AdminDashboard = () => {
                     {/* Avatar */}
                     <div className="w-12 h-12 rounded-xl overflow-hidden bg-secondary flex-shrink-0">
                       {member.photo_url ? (
-                        <img src={member.photo_url} alt={member.name} className="w-full h-full object-cover" />
+                        <img src={member.photo_url} alt={member.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-muted-foreground font-medium">
                           {member.name.split(" ").map((n) => n[0]).join("")}

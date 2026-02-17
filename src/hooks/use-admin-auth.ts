@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
@@ -7,40 +7,59 @@ export function useAdminAuth() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const checkAdmin = useCallback(async (userId: string) => {
+    try {
+      const { data } = await supabase.rpc("has_role", {
+        _user_id: userId,
+        _role: "admin",
+      });
+      return !!data;
+    } catch {
+      return false;
+    }
+  }, []);
+
   useEffect(() => {
+    let cancelled = false;
+
+    // 1. Get initial session — this is the primary source of truth
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (cancelled) return;
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        const admin = await checkAdmin(currentUser.id);
+        if (!cancelled) setIsAdmin(admin);
+      }
+      if (!cancelled) setLoading(false);
+    });
+
+    // 2. Listen for changes (sign-in, sign-out, token refresh)
+    //    CRITICAL: Never await async calls inside onAuthStateChange — causes deadlock
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (_event, session) => {
+        if (cancelled) return;
         const currentUser = session?.user ?? null;
         setUser(currentUser);
 
         if (currentUser) {
-          const { data } = await supabase.rpc("has_role", {
-            _user_id: currentUser.id,
-            _role: "admin",
-          });
-          setIsAdmin(!!data);
+          // Defer async check outside callback to avoid deadlock
+          setTimeout(async () => {
+            if (cancelled) return;
+            const admin = await checkAdmin(currentUser.id);
+            if (!cancelled) setIsAdmin(admin);
+          }, 0);
         } else {
           setIsAdmin(false);
         }
-        setLoading(false);
       }
     );
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        const { data } = await supabase.rpc("has_role", {
-          _user_id: currentUser.id,
-          _role: "admin",
-        });
-        setIsAdmin(!!data);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
+  }, [checkAdmin]);
 
   const login = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -48,6 +67,8 @@ export function useAdminAuth() {
   };
 
   const logout = async () => {
+    setIsAdmin(false);
+    setUser(null);
     await supabase.auth.signOut();
   };
 

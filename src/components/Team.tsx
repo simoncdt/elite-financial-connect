@@ -28,7 +28,7 @@ export const LeaderCard = ({
       <div className="relative overflow-hidden rounded-3xl bg-background border border-border hover:border-gold-300 hover:shadow-xl transition-all duration-300">
         <div className="relative aspect-[4/5] overflow-hidden">
           {member.photo_url ? (
-            <img src={member.photo_url} alt={member.name}
+            <img src={member.photo_url} alt={member.name} loading="lazy" decoding="async"
               className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105" />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
@@ -79,7 +79,7 @@ const AdvisorCard = ({
       <div className="group p-5 bg-background rounded-2xl border border-border hover:border-gold-300 hover:shadow-lg transition-all duration-300">
         <div className="w-14 h-14 rounded-2xl overflow-hidden mb-4 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:from-gold-100 group-hover:to-gold-50 transition-all">
           {member.photo_url ? (
-            <img src={member.photo_url} alt={member.name} className="w-full h-full object-cover" />
+            <img src={member.photo_url} alt={member.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
           ) : (
             <span className="text-lg font-medium text-gray-400 group-hover:text-gold-600 transition-colors">{initials}</span>
           )}

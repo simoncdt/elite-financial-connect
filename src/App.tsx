@@ -12,7 +12,16 @@ import Admin from "./pages/Admin";
 import { CookieConsent } from "./components/CookieConsent";
 import { EngagementPopup } from "./components/EngagementPopup";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,      // 5 min — data stays fresh, no refetch on navigation
+      gcTime: 10 * 60 * 1000,         // 10 min — cache kept in memory
+      refetchOnWindowFocus: false,     // no refetch when switching tabs
+      retry: 1,                        // 1 retry on failure, then give up fast
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -26,7 +35,6 @@ const App = () => (
           <Route path="/blog" element={<Blog />} />
           <Route path="/conseiller/:advisorId" element={<AdvisorLinktree />} />
           <Route path="/admin" element={<Admin />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
