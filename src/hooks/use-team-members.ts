@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { teamMembers as staticTeamMembers } from "@/lib/team-data";
 
 export interface TeamMemberDB {
   id: string;
@@ -18,6 +19,24 @@ export interface TeamMemberDB {
   updated_at: string;
 }
 
+// Static fallback data derived from team-data.ts for when DB is unreachable
+const fallbackMembers: TeamMemberDB[] = staticTeamMembers.map((m, i) => ({
+  id: m.id,
+  slug: m.id,
+  name: m.name,
+  role: m.role,
+  email: m.email,
+  photo_url: m.photo || null,
+  is_leader: m.isLeader || false,
+  description: m.description || null,
+  phone: m.phone || null,
+  linkedin: m.linkedin || null,
+  facebook: m.facebook || null,
+  display_order: i + 1,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+}));
+
 export function useTeamMembers() {
   return useQuery({
     queryKey: ["team-members"],
@@ -29,6 +48,8 @@ export function useTeamMembers() {
       if (error) throw error;
       return data as TeamMemberDB[];
     },
+    // If all retries fail, return cached/fallback data
+    placeholderData: fallbackMembers,
   });
 }
 
@@ -46,6 +67,7 @@ export function useTeamMemberBySlug(slug: string | undefined) {
       return data as TeamMemberDB | null;
     },
     enabled: !!slug,
+    placeholderData: () => fallbackMembers.find((m) => m.slug === slug) || null,
   });
 }
 
@@ -124,11 +146,10 @@ export function useUploadTeamPhoto() {
       const ext = file.name.split(".").pop();
       const path = `${slug}.${ext}`;
       
-      // Try to remove old file (ignore errors if it doesn't exist)
       try {
         await supabase.storage.from("team-photos").remove([path]);
       } catch {
-        // File may not exist, that's fine
+        // File may not exist
       }
       
       const { error } = await supabase.storage
@@ -140,7 +161,6 @@ export function useUploadTeamPhoto() {
         .from("team-photos")
         .getPublicUrl(path);
 
-      // Add cache-busting param to force refresh
       return `${urlData.publicUrl}?t=${Date.now()}`;
     },
   });

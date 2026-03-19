@@ -15,10 +15,11 @@ import { EngagementPopup } from "./components/EngagementPopup";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,      // 5 min — data stays fresh, no refetch on navigation
-      gcTime: 10 * 60 * 1000,         // 10 min — cache kept in memory
-      refetchOnWindowFocus: false,     // no refetch when switching tabs
-      retry: 1,                        // 1 retry on failure, then give up fast
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      retry: 3,
+      retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 8000),
     },
   },
 });
