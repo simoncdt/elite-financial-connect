@@ -20,13 +20,7 @@ const TeamPage = () => {
     setIsModalOpen(true);
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
+  // No loading screen - placeholderData provides instant content
 
   return (
     <div className="min-h-screen bg-background">
